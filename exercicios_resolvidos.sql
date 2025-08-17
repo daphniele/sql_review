@@ -40,3 +40,24 @@ select nome from veiculos where comprimento > 10 and potmotor>120;
 -- 5) Listar o nome e o comprimento de todos os barcos cuja potencia fique entre 50 e 300
 
 select nome, comprimento from veiculos where codtipo != 2 and potmotor between 50 and 300;
+
+-- 6) Busque a maior e a menor diária dentre os barcos
+select * from veiculos where vldiaria in (select max(vldiaria) from veiculos);
+select * from veiculos where vldiaria in (select min(vldiaria) from veiculos);
+
+-- 7) Conte o número de locações que se iniciaram no dia ‘2021-12-29’
+
+select count(*) from locacoes where inicio='2021-12-29';
+
+-- 8) Apresente a idade do funcionário mais novo, do funcionário mais velho e a média de idades de todos os funcionários
+
+select min(idade) from funcionarios;
+select max(idade) from funcionarios;
+select avg(idade) from funcionarios;
+
+-- 9) Liste os estados civis cadastrados (sem repetir)
+select distinct estado_civil from clientes;
+
+-- 10) Liste os nomes de todas as pessoas cadastradas (funcionários + clientes)
+
+select nome from clientes UNION select nome from funcionarios;
