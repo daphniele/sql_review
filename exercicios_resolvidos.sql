@@ -141,3 +141,18 @@ select descricao_tipo, avg(total_dias) from total_dias_por_tipo group by descric
 
 -- 11) Para cada locação apresente o funcionário resposável, o nome do barco, o nome do cliente e o valor calculado da locação
 
+select f.nome, v.nome, c.nome, ((l.fim - l.inicio) * v.vlDiaria) as valor_total_locacao
+from locacoes l join funcionarios f on f.codf = l.codf 
+join veiculos v on v.matricula = l.matricula 
+join clientes c on c.cpf = l.cpf;
+
+
+-- 1) Apresente quantos barcos foram locados por dia (considerando data inicial)
+
+select inicio, count(*) from locacoes group by inicio;
+
+-- 2)Verifique quais o cpfs possuem mais de duas locações 
+
+select cpf, count(*) as total from locacoes group by cpf having count(*) >2;
+
+
