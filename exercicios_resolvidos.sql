@@ -61,3 +61,83 @@ select distinct estado_civil from clientes;
 -- 10) Liste os nomes de todas as pessoas cadastradas (funcionários + clientes)
 
 select nome from clientes UNION select nome from funcionarios;
+
+-- estudar funções de agregação -- array_agg, string_agg
+
+
+-- 1) Liste os nomes dos veículos e seus respectivos tipos (descrição do tipo)
+
+select v.nome, t.descricao from veiculos v join tipos_veiculos t on v.codtipo  = t.codtipo ;
+
+-- 2) Apresente o nome dos funcionários que fizeram locações no dia 17/02/2022
+
+select f.nome from funcionarios f join locacoes l on f.codf = l.codf where inicio='2022-02-17';
+
+-- 3) Liste o nome, num_filhos, estado civil e descrição da habilitação de todos os clientes
+
+select c.nome, c.num_filhos, c.estado_civil, h.descricao from clientes c join habilitacao h on c.codh = h.codh;
+
+-- 4) Apresente os dados da locação (nome do barco, potencia, descrição do tipo, data inicio, data fim, nome do funcionário resposável) feito por João (68745120480)
+
+select v.nome, v.potmotor, t.descricao, l.inicio, l.fim, f.nome from veiculos v join tipos_veiculos t on v.codtipo = t.codtipo join locacoes l on v.matricula = l.matricula join funcionarios f on l.codf = f.codf where l.cpf='68745120480';
+
+-- 5) Apresente quantos veículos estão cadastrados para cada um dos tipos
+
+select codtipo, count(*) from veiculos group by codtipo;
+select t.descricao, count(v.matricula) from veiculos v join tipos_veiculos t on t.codtipo = v.codtipo group by t.descricao;
+
+-- 6) Considerando as habilitações, apresente quantos veículos estão cadastrados para cada uma das categorias de habilitação
+
+
+
+-- 7) Apresente o veículo mais e menos locado
+
+-- mais locado
+with total_locacoes as (
+    select v.nome as nome, count(l.matricula) as total from veiculos v join locacoes l on v.matricula = l.matricula group by v.nome
+)
+select nome, total
+from total_locacoes
+where total = (select max(total) from total_locacoes);
+
+-- menos locado
+with total_locacoes as (
+    select v.nome as nome, count(l.matricula) as total from veiculos v join locacoes l on v.matricula = l.matricula group by v.nome
+)
+select nome, total
+from total_locacoes
+where total = (select min(total) from total_locacoes);
+
+
+-- 8) Qual o funcionário que mais participou de locações
+with total_locacoes as (
+    select f.nome as nome, count(l.codf) as total from funcionarios f join locacoes l on f.codf = l.codf group by f.nome
+)
+select nome
+from total_locacoes
+where total = (select max(total) from total_locacoes);
+
+-- 9) Em média quantos dias duram as locações?
+
+with dias as (select fim - inicio as total_dias from locacoes)
+select avg(total_dias) from dias;
+
+
+-- 10) Considerando o tipo de embarcação, qual a média de dias que cada tipo de embarcação fica locada
+
+-- fazer um count agrupado por tipo de embarcação, e depois fazer a média
+
+with total_dias_por_tipo as (
+select 
+    tp.descricao as descricao_tipo, 
+    l.fim - l.inicio as total_dias
+from locacoes l 
+join veiculos v on l.matricula = v.matricula 
+join tipos_veiculos tp on v.codtipo = tp.codtipo
+group by tp.descricao, l.fim - l.inicio
+)
+select descricao_tipo, avg(total_dias) from total_dias_por_tipo group by descricao_tipo;
+
+
+-- 11) Para cada locação apresente o funcionário resposável, o nome do barco, o nome do cliente e o valor calculado da locação
+
