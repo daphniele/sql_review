@@ -88,7 +88,7 @@ select t.descricao, count(v.matricula) from veiculos v join tipos_veiculos t on 
 
 -- 6) Considerando as habilitações, apresente quantos veículos estão cadastrados para cada uma das categorias de habilitação
 
-
+select tv.descricao, tv.codtipo, count(vh.codh) from tipos_veiculos tv join Veiculos_Habilitacoes vh on tv.codtipo = vh.codtipo group by tv.descricao, tv.codtipo;
 
 -- 7) Apresente o veículo mais e menos locado
 
